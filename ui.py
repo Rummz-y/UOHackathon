@@ -2,6 +2,7 @@ from pathlib import Path
 import requests
 import json
 import pandas
+from pathlib import Path
 us_states = {
     'ALABAMA': 'AL',
     'ALASKA': 'AK',
@@ -87,7 +88,11 @@ def load_csv_with_header(file_path):
     return df
 
 # Example usage
+<<<<<<< HEAD
 csv_file_path = "/Users/benelster/Documents/Hackathon fall 2024/UOHackathon/UOHackathon/cityData.csv"
+=======
+csv_file_path = Path("cityData.csv")
+>>>>>>> ff376a21bcaaeeaef6fba457ed5df0e2ca911643
 df = load_csv_with_header(csv_file_path)
 def get_shorthand(state_str):
     state_str = state_str.upper()
@@ -103,6 +108,7 @@ def cities_in_states(shorthand):
             if citiesInState not in list:
                 list.append(citiesInState)
     return list
+<<<<<<< HEAD
 
 def get_cords(city):
     list = []
@@ -158,3 +164,26 @@ if __name__ == '__main__':
 
 
 
+=======
+    #if x['abbr'] == "OR":
+        #print(x)
+# Display the DataFrame
+#print(df['stateID'])
+
+def get_cords(city, state):
+   list = []
+   for index, row in df.iterrows():
+       rowDict=row.to_dict()
+       state_code = get_shorthand(state)
+       if rowDict['city'] == city and rowDict['abbr'] == state_code:
+           if state_code == 'AK' or state_code == 'HI':
+               #data set is inconsistent with HI and AK so must adjust
+               list.append(row.to_dict()['dir'])
+               list.append(row.to_dict()['lat'])
+           else:
+               #else add lat, long normally
+               list.append(row.to_dict()['lat'])
+               list.append(row.to_dict()['long'])
+
+           return list
+>>>>>>> ff376a21bcaaeeaef6fba457ed5df0e2ca911643
