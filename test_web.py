@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import folium
 from streamlit_folium import st_folium
+import ui
 
 
 
@@ -13,6 +14,21 @@ data = {
     "temp" : [1,4,5,10,15,23,32,33,25,16,5,-3]
 }
 
+#list of states + DC
+us_states_and_dc = [
+    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 
+    'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 
+    'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 
+    'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 
+    'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 
+    'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 
+    'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 
+    'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 
+    'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 
+    'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'District of Columbia'
+]
+
+
 def main():
     test_df = pd.DataFrame(data) #data in the chart atm
 
@@ -23,8 +39,10 @@ def main():
     }, dtype=str)
 
     st.header("Welcome to our Weather App!")
-    state = st.text_input("Type a state / D.C:")
-    city = st.text_input("Type a city:")
+    state = st.selectbox("Enter a state", us_states_and_dc)
+    city = st.selectbox("Enter a city:", ui.cities_in_states(ui.get_shorthand(state.upper())))
+
+
 
     st.write(f"The city you chose is {city}, {state}")
 

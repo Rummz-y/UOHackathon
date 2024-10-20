@@ -1,6 +1,7 @@
 import requests
 import json
 import pandas
+from pathlib import Path
 us_states = {
     'ALABAMA': 'AL',
     'ALASKA': 'AK',
@@ -110,7 +111,7 @@ def load_csv_with_header(file_path):
     return df
 
 # Example usage
-csv_file_path = '/Users/benelster/Documents/Hackathon fall 2024/UOHackathon/cityData.csv'
+csv_file_path = Path("cityData.csv")
 df = load_csv_with_header(csv_file_path)
 def get_shorthand(state_str):
     state_str = state_str.upper()
@@ -126,7 +127,6 @@ def cities_in_states(shorthand):
             if citiesInState not in list:
                 list.append(citiesInState)
     return list
-print(cities_in_states("CA"))
     #if x['abbr'] == "OR":
         #print(x)
 # Display the DataFrame
