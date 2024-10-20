@@ -1,6 +1,6 @@
 with open('/Users/benelster/Documents/Hackathon fall 2024/UOHackathon/cityData.csv', 'r') as f:
     content = f.read()
-rows = list(content.strip())]
+rows = list(content.strip())
 
 def chars_to_strings(char_list):
     result = []

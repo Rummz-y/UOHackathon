@@ -1,3 +1,4 @@
+from pathlib import Path
 import requests
 import json
 import pandas
@@ -65,33 +66,9 @@ us_states = {
 #print(lat, long)
 #response = requests.get(f'https://api.weather.gov/alerts?point={44.040950775146484},{-122.95088958740234}').json()
 
-#features = response.get('features', [])
 
-'''
 
-#data = []
 
-# Loop through each feature and extract relevant properties (e.g., 'areaDesc')
-#for feature in features:
-    properties = feature.get('properties', {})
-    area_desc = properties.get('areaDesc', 'N/A')  # Default to 'N/A' if 'areaDesc' doesn't exist
-    headline = properties.get('headline', 'N/A')
-    severity = properties.get('severity', 'N/A')
-    event = properties.get('event', 'N/A')
-    
-    # Add this data as a new row to the list
-    data.append({
-        'areaDesc': area_desc,
-        'headline': headline,
-        'severity': severity,
-        'event': event
-    })
-'''
-# Convert the list of dictionaries to a pandas DataFrame
-#df = pandas.DataFrame(data)
-
-# Display the DataFrame
-#print(df)
 
 
 def load_csv_with_header(file_path):
@@ -110,7 +87,7 @@ def load_csv_with_header(file_path):
     return df
 
 # Example usage
-csv_file_path = '/Users/benelster/Documents/Hackathon fall 2024/UOHackathon/cityData.csv'
+csv_file_path = "/Users/benelster/Documents/Hackathon fall 2024/UOHackathon/UOHackathon/cityData.csv"
 df = load_csv_with_header(csv_file_path)
 def get_shorthand(state_str):
     state_str = state_str.upper()
@@ -126,8 +103,58 @@ def cities_in_states(shorthand):
             if citiesInState not in list:
                 list.append(citiesInState)
     return list
-print(cities_in_states("CA"))
-    #if x['abbr'] == "OR":
-        #print(x)
-# Display the DataFrame
-#print(df['stateID'])
+
+def get_cords(city):
+    list = []
+    for index, row in df.iterrows():
+        rowDict=row.to_dict()
+        if rowDict['city'] == city:
+            list.append(row.to_dict()['lat'])
+            list.append(row.to_dict()['long'])
+            return list
+  
+
+
+#print(get_cords('Coconino'))
+def get_forecast(city_cords):
+    response = requests.get(f'https://api.weather.gov/points/{city_cords[0]},{city_cords[1]}')
+    data = response.json()
+    forecast_urls = data['properties']['forecast']
+    forecast_res = requests.get(forecast_urls)
+
+    # Convert the forecast response to JSON
+    forecast_data = forecast_res.json()
+
+    # Access the forecast periods
+    periods = forecast_data['properties']['periods']
+    for period in periods:
+        nameVar = period['name']
+        tempVar = period['temperature']
+        castVar = period['shortForecast']
+        prepVar = period['probabilityOfPrecipitation'].get('value', 'N/A')
+        windVar = period['windSpeed']
+        if prepVar == None:
+            print(f'{nameVar}, {tempVar}F, {castVar}, 0%, {windVar}')
+        else:
+            print(f'{nameVar}, {tempVar}F, {castVar}, {prepVar}%, {windVar}')
+
+def main():
+    # Example location - you can replace 'Coconino' with any valid location name
+    location = 'Coconino'
+    
+    # Get coordinates based on location
+    results = get_cords(location)
+
+    
+    # Fetch the weather forecast data
+    forecast_data = get_forecast(results)
+    
+    # Print the forecast data
+    
+
+# Entry point of the script
+if __name__ == '__main__':
+    main()
+
+
+
