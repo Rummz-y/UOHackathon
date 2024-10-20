@@ -142,9 +142,9 @@ def get_forecast(city_cords):
         prepVar = period['probabilityOfPrecipitation'].get('value', 'N/A')
         windVar = period['windSpeed']
         if prepVar == None:
-            print(f'{nameVar}, {tempVar}F, {castVar}, 0%, {windVar}')
+            return([nameVar,tempVar,castVar, 0, windVar])
         else:
-            print(f'{nameVar}, {tempVar}F, {castVar}, {prepVar}%, {windVar}')
+            return([nameVar,tempVar,castVar,prepVar,windVar])
 
 def main():
     # Example location - you can replace 'Coconino' with any valid location name
