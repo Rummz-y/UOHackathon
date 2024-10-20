@@ -131,3 +131,20 @@ def cities_in_states(shorthand):
         #print(x)
 # Display the DataFrame
 #print(df['stateID'])
+
+def get_cords(city, state):
+   list = []
+   for index, row in df.iterrows():
+       rowDict=row.to_dict()
+       state_code = get_shorthand(state)
+       if rowDict['city'] == city and rowDict['abbr'] == state_code:
+           if state_code == 'AK' or state_code == 'HI':
+               #data set is inconsistent with HI and AK so must adjust
+               list.append(row.to_dict()['dir'])
+               list.append(row.to_dict()['lat'])
+           else:
+               #else add lat, long normally
+               list.append(row.to_dict()['lat'])
+               list.append(row.to_dict()['long'])
+
+           return list

@@ -32,22 +32,33 @@ us_states_and_dc = [
 def main():
     test_df = pd.DataFrame(data) #data in the chart atm
 
-    map_point_data = pd.DataFrame({ #map data
-        'lon' : [-77.0369, -123.0867, -118.2436],
-        'lat' : [38.9072, 44.0521, 34.0522],
-        'name' : ['Washington', 'Eugene', 'Los Angeles']
-    }, dtype=str)
-
     st.header("Welcome to our Weather App!")
+
+    #gets city and state from user
     state = st.selectbox("Enter a state", us_states_and_dc)
-    city = st.selectbox("Enter a city:", ui.cities_in_states(ui.get_shorthand(state.upper())))
+    county = st.selectbox("Enter a county:", ui.cities_in_states(ui.get_shorthand(state.upper())))
 
+    st.write(f"The county you chose is {county}, {state}")
 
+    draw_map(state, county)#renders map
 
-    st.write(f"The city you chose is {city}, {state}")
+    st.bar_chart(test_df, x="month", y="temp") #displays graph
+
+def draw_map(state, county):
+
+    #adjust zoom for lower 48, Alaska, Hawaii
+    if(state == "Alaska"):
+        location_cord = [63.5888, -154.4931]
+        zoom = 3.2
+    elif(state == "Hawaii"):
+        location_cord = [20.7417, -157.7444]
+        zoom = 7
+    else:
+        location_cord = [38,-96.5]
+        zoom = 4
 
     #defines the map
-    home_map = folium.Map(location=[38,-96.5], zoom_start=4, 
+    home_map = folium.Map(location_cord, zoom_start=zoom, 
                    scrollWheelZoom = True)
     
     #adds fire marker
@@ -57,21 +68,16 @@ def main():
                                    prefix='fa')
                   ).add_to(home_map)
     
-    #adds markers
-    for i in range(0,len(map_point_data)): 
-        folium.Marker(
-            location = [map_point_data.iloc[i]['lat'],
-                        map_point_data.iloc[i]['lon']],
-
-            popup = map_point_data.iloc[i]['name'],
-            
-        ).add_to(home_map)
+    #adds ping on county
+    folium.Marker(
+        location = ui.get_cords(county, state),
+        popup = f"{county}, {state}"      
+    ).add_to(home_map)
     
     st_folium(home_map, width=700, height=450) #displays map
 
-    st.bar_chart(test_df, x="month", y="temp") #displays graph
-
-
+def draw_temp_graph(temp):
+    pass
 
 if __name__ == "__main__":
     main()
