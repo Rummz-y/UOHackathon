@@ -1,0 +1,5 @@
+Stuff to include:
+
+1. temp
+2. percip
+3. air quality
