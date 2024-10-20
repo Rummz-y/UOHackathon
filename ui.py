@@ -57,6 +57,7 @@ us_states = {
 }
 
 
+
 def load_csv_with_header(file_path):
     """
     This function loads a CSV file and treats the first line as the header.
@@ -67,29 +68,18 @@ def load_csv_with_header(file_path):
     Returns:
         pd.DataFrame: The loaded DataFrame with the first row as header.
     """
-    df = pandas.read_csv(file_path, header=0)
+    # Load the CSV and treat the first line as the header
+    df = pandas.read_csv(file_path, header=0)  # 'header=0' tells pandas to use the first line as header
     
     return df
 
-<<<<<<< HEAD
-csv_file_path = "/Users/benelster/Documents/Hackathon fall 2024/UOHackathon/UOHackathon/cityData.csv"
-=======
 # Example usage
 csv_file_path = Path("cityData.csv")
->>>>>>> bad24878c5e973114072b6ddbe697aa77feb6c1b
 df = load_csv_with_header(csv_file_path)
 def get_shorthand(state_str):
     state_str = state_str.upper()
     shorthand = us_states[state_str]
     return shorthand
-
-def get_zoneID(county):
-    list = []
-    for index, row in df.iterrows():
-        rowDict=row.to_dict()
-        if rowDict['city'] == county:
-            citiesInState = (rowDict['stateID'])
-            return citiesInState
 
 def cities_in_states(shorthand):
     list = []
@@ -108,15 +98,6 @@ def get_cords(city, state):
        state_code = get_shorthand(state)
        if rowDict['city'] == city and rowDict['abbr'] == state_code:
            if state_code == 'AK' or state_code == 'HI':
-<<<<<<< HEAD
-               list.append(row.to_dict()['dir'])
-               list.append(row.to_dict()['lat'])
-           else:
-               list.append(row.to_dict()['lat'])
-               list.append(row.to_dict()['long'])
-
-           return list 
-=======
                #data set is inconsistent with HI and AK so must adjust
                list.append(row.to_dict()['dir'])
                list.append(row.to_dict()['lat'])
@@ -127,28 +108,42 @@ def get_cords(city, state):
 
            return list
   
->>>>>>> bad24878c5e973114072b6ddbe697aa77feb6c1b
 
+#print(get_cords('Coconino'))
 def get_forecast(city_cords):
     response = requests.get(f'https://api.weather.gov/points/{city_cords[0]},{city_cords[1]}')
     data = response.json()
     forecast_urls = data['properties']['forecast']
     forecast_res = requests.get(forecast_urls)
 
+    # Convert the forecast response to JSON
     forecast_data = forecast_res.json()
-
+    #fix this to give temp over a week
+    # Access the forecast periods
     periods = forecast_data['properties']['periods']
+    nameVar = periods[0]['name']
+    tempVar = []
+    castVar = periods[0]['shortForecast']
+    prepVar = periods[0]['probabilityOfPrecipitation'].get('value', 'N/A')
+    windVar = periods[0]['windSpeed']
+    i = 1
     for period in periods:
-        nameVar = period['name']
-        tempVar = period['temperature']
-        castVar = period['shortForecast']
-        prepVar = period['probabilityOfPrecipitation'].get('value', 'N/A')
-        windVar = period['windSpeed']
-        if prepVar == None:
-            return([nameVar,tempVar,castVar, 0, windVar])
-        else:
-            return([nameVar,tempVar,castVar,prepVar,windVar])
+        if i % 2 == 0:
+            tempVar.append(period['temperature'])
+        i+=1
+        
+    if prepVar == None:
+        return([nameVar,tempVar,castVar,0,windVar])
+    else:
+        return([nameVar,tempVar,castVar,prepVar,windVar])
 
+def get_zoneID(county):
+    list = []
+    for index, row in df.iterrows():
+        rowDict=row.to_dict()
+        if rowDict['city'] == county:
+            citiesInState = (rowDict['stateID'])
+            return citiesInState
 
 def get_alerts(zoneID):
     zoneId_let = zoneID[:2]
@@ -164,9 +159,8 @@ def get_alerts(zoneID):
         for x in data['features']:
             return x['properties']['description']
 
+    
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> bad24878c5e973114072b6ddbe697aa77feb6c1b
+
