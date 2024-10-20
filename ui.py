@@ -71,7 +71,12 @@ def load_csv_with_header(file_path):
     
     return df
 
+<<<<<<< HEAD
 csv_file_path = "/Users/benelster/Documents/Hackathon fall 2024/UOHackathon/UOHackathon/cityData.csv"
+=======
+# Example usage
+csv_file_path = Path("cityData.csv")
+>>>>>>> bad24878c5e973114072b6ddbe697aa77feb6c1b
 df = load_csv_with_header(csv_file_path)
 def get_shorthand(state_str):
     state_str = state_str.upper()
@@ -103,6 +108,7 @@ def get_cords(city, state):
        state_code = get_shorthand(state)
        if rowDict['city'] == city and rowDict['abbr'] == state_code:
            if state_code == 'AK' or state_code == 'HI':
+<<<<<<< HEAD
                list.append(row.to_dict()['dir'])
                list.append(row.to_dict()['lat'])
            else:
@@ -110,6 +116,18 @@ def get_cords(city, state):
                list.append(row.to_dict()['long'])
 
            return list 
+=======
+               #data set is inconsistent with HI and AK so must adjust
+               list.append(row.to_dict()['dir'])
+               list.append(row.to_dict()['lat'])
+           else:
+               #else add lat, long normally
+               list.append(row.to_dict()['lat'])
+               list.append(row.to_dict()['long'])
+
+           return list
+  
+>>>>>>> bad24878c5e973114072b6ddbe697aa77feb6c1b
 
 def get_forecast(city_cords):
     response = requests.get(f'https://api.weather.gov/points/{city_cords[0]},{city_cords[1]}')
@@ -127,9 +145,9 @@ def get_forecast(city_cords):
         prepVar = period['probabilityOfPrecipitation'].get('value', 'N/A')
         windVar = period['windSpeed']
         if prepVar == None:
-            print(f'{nameVar}, {tempVar}F, {castVar}, 0%, {windVar}')
+            return([nameVar,tempVar,castVar, 0, windVar])
         else:
-            print(f'{nameVar}, {tempVar}F, {castVar}, {prepVar}%, {windVar}')
+            return([nameVar,tempVar,castVar,prepVar,windVar])
 
 
 def get_alerts(zoneID):
@@ -147,5 +165,8 @@ def get_alerts(zoneID):
             return x['properties']['description']
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> bad24878c5e973114072b6ddbe697aa77feb6c1b

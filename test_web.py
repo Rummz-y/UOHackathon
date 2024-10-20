@@ -42,7 +42,8 @@ def main():
 
     draw_map(state, county)#renders map
 
-    st.bar_chart(test_df, x="month", y="temp") #displays graph
+    cords = ui.get_cords(county, state)
+    draw_today_data(cords)
 
 def draw_map(state, county):
 
@@ -76,8 +77,20 @@ def draw_map(state, county):
     
     st_folium(home_map, width=700, height=450) #displays map
 
-def draw_temp_graph(temp):
-    pass
+def draw_today_data(cords):
+    w_data = ui.get_forecast(cords)
+
+    col1, col2, col3 = st.columns(3, gap="small", vertical_alignment="top")
+
+    st.metric("Forecast", w_data[2])
+
+    with col1:
+        st.metric("Temperature", f"{w_data[1]}°F")
+    with col2:
+        st.metric("Percipitation", f"{w_data[3]}%")
+    with col3:
+        st.metric("Wind Speed", w_data[4])
+    
 
 if __name__ == "__main__":
     main()
