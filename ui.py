@@ -56,21 +56,6 @@ us_states = {
     'WYOMING': 'WY'
 }
 
-# Example usage:
-
-
-#ip_address = requests.get('http://api.ipify.org').text
-#geo_data = requests.get(f'http://api.ipstack.com/{ip_address}?access_key=c7941656ee9e082bd1666d35d494caa3').json()
-#print(geo_data)
-#lat = geo_data['latitude']
-#long = geo_data['longitude']
-#print(lat, long)
-#response = requests.get(f'https://api.weather.gov/alerts?point={44.040950775146484},{-122.95088958740234}').json()
-
-
-
-
-
 
 def load_csv_with_header(file_path):
     """
@@ -82,22 +67,24 @@ def load_csv_with_header(file_path):
     Returns:
         pd.DataFrame: The loaded DataFrame with the first row as header.
     """
-    # Load the CSV and treat the first line as the header
-    df = pandas.read_csv(file_path, header=0)  # 'header=0' tells pandas to use the first line as header
+    df = pandas.read_csv(file_path, header=0)
     
     return df
 
-# Example usage
-<<<<<<< HEAD
 csv_file_path = "/Users/benelster/Documents/Hackathon fall 2024/UOHackathon/UOHackathon/cityData.csv"
-=======
-csv_file_path = Path("cityData.csv")
->>>>>>> ff376a21bcaaeeaef6fba457ed5df0e2ca911643
 df = load_csv_with_header(csv_file_path)
 def get_shorthand(state_str):
     state_str = state_str.upper()
     shorthand = us_states[state_str]
     return shorthand
+
+def get_zoneID(county):
+    list = []
+    for index, row in df.iterrows():
+        rowDict=row.to_dict()
+        if rowDict['city'] == county:
+            citiesInState = (rowDict['stateID'])
+            return citiesInState
 
 def cities_in_states(shorthand):
     list = []
@@ -108,30 +95,30 @@ def cities_in_states(shorthand):
             if citiesInState not in list:
                 list.append(citiesInState)
     return list
-<<<<<<< HEAD
 
-def get_cords(city):
-    list = []
-    for index, row in df.iterrows():
-        rowDict=row.to_dict()
-        if rowDict['city'] == city:
-            list.append(row.to_dict()['lat'])
-            list.append(row.to_dict()['long'])
-            return list
-  
+def get_cords(city, state):
+   list = []
+   for index, row in df.iterrows():
+       rowDict=row.to_dict()
+       state_code = get_shorthand(state)
+       if rowDict['city'] == city and rowDict['abbr'] == state_code:
+           if state_code == 'AK' or state_code == 'HI':
+               list.append(row.to_dict()['dir'])
+               list.append(row.to_dict()['lat'])
+           else:
+               list.append(row.to_dict()['lat'])
+               list.append(row.to_dict()['long'])
 
+           return list 
 
-#print(get_cords('Coconino'))
 def get_forecast(city_cords):
     response = requests.get(f'https://api.weather.gov/points/{city_cords[0]},{city_cords[1]}')
     data = response.json()
     forecast_urls = data['properties']['forecast']
     forecast_res = requests.get(forecast_urls)
 
-    # Convert the forecast response to JSON
     forecast_data = forecast_res.json()
 
-    # Access the forecast periods
     periods = forecast_data['properties']['periods']
     for period in periods:
         nameVar = period['name']
@@ -144,46 +131,21 @@ def get_forecast(city_cords):
         else:
             print(f'{nameVar}, {tempVar}F, {castVar}, {prepVar}%, {windVar}')
 
-def main():
-    # Example location - you can replace 'Coconino' with any valid location name
-    location = 'Coconino'
+
+def get_alerts(zoneID):
+    zoneId_let = zoneID[:2]
+    zoneId_num = zoneID[-3:]
+
+    modified_zoneID = zoneId_let + "Z" + zoneId_num
     
-    # Get coordinates based on location
-    results = get_cords(location)
-
-    
-    # Fetch the weather forecast data
-    forecast_data = get_forecast(results)
-    
-    # Print the forecast data
-    
-
-# Entry point of the script
-if __name__ == '__main__':
-    main()
+    response = requests.get(f'https://api.weather.gov/alerts/active/zone/{modified_zoneID}')
+    data = response.json()
+    if data['features'] == []:
+        return "No active alerts in county"
+    else:
+        for x in data['features']:
+            return x['properties']['description']
 
 
 
-=======
-    #if x['abbr'] == "OR":
-        #print(x)
-# Display the DataFrame
-#print(df['stateID'])
 
-def get_cords(city, state):
-   list = []
-   for index, row in df.iterrows():
-       rowDict=row.to_dict()
-       state_code = get_shorthand(state)
-       if rowDict['city'] == city and rowDict['abbr'] == state_code:
-           if state_code == 'AK' or state_code == 'HI':
-               #data set is inconsistent with HI and AK so must adjust
-               list.append(row.to_dict()['dir'])
-               list.append(row.to_dict()['lat'])
-           else:
-               #else add lat, long normally
-               list.append(row.to_dict()['lat'])
-               list.append(row.to_dict()['long'])
-
-           return list
->>>>>>> ff376a21bcaaeeaef6fba457ed5df0e2ca911643
