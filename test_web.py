@@ -3,6 +3,9 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 import ui
+import datetime
+import altair as alt
+import matplotlib.pyplot as plt
 
 
 
@@ -62,13 +65,6 @@ def draw_map(state, county):
     home_map = folium.Map(location_cord, zoom_start=zoom, 
                    scrollWheelZoom = True)
     
-    #adds fire marker
-    folium.Marker(location = [40, -100], 
-                  icon=folium.Icon(color='red',
-                                   icon='fire',
-                                   prefix='fa')
-                  ).add_to(home_map)
-    
     #adds ping on county
     folium.Marker(
         location = ui.get_cords(county, state),
@@ -85,11 +81,41 @@ def draw_today_data(cords):
     st.metric("Forecast", w_data[2])
 
     with col1:
-        st.metric("Temperature", f"{w_data[1]}°F")
+        st.metric("Temperature", f"{w_data[1][0]}°F")
     with col2:
         st.metric("Percipitation", f"{w_data[3]}%")
     with col3:
         st.metric("Wind Speed", w_data[4])
+
+    st.subheader("Temperature for the Next 7 Days")
+
+    draw_week_graph(w_data[1])
+
+def draw_week_graph(data):
+    day = datetime.datetime.today()
+    day_num = day.weekday()
+    
+    days = ['Monday','Tuesday','Wednesday','Thursday'
+            ,'Friday','Saturday','Sunday']
+    
+    order_days = []
+    
+    i = 0
+    while i <= 6:
+        order_days.append(days[day_num])
+        day_num+=1
+        if day_num > 6:
+            day_num = 0
+        i+=1
+    
+    fig, ax = plt.subplots()
+    try:
+        ax.plot(order_days,data,label="Temperature Throughout the Week")
+
+        st.pyplot(fig)
+    except:
+        st.text("NWS Missing data for this county")
+
     
 
 if __name__ == "__main__":
